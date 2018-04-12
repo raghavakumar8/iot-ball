@@ -1,12 +1,12 @@
 /**
- * File: main.cpp
+ * File: blink.cpp
  * Author: Raghava Kumar
  */
 
 #include <Arduino.h>
- 
-#define LED 13
- 
+
+#define LED 5
+
 void setup()
 {
   pinMode(LED, OUTPUT);
@@ -15,8 +15,8 @@ void setup()
 void loop()
 {
   digitalWrite(LED, HIGH);
-  delay(1000);
+  delay(100);
 
   digitalWrite(LED, LOW);
-  delay(1000);
+  delay(100);
 }
