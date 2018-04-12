@@ -1,3 +1,6 @@
 # Inventor Cache
 OldVersions/
 lockfile.lck
+
+# Platformio
+.pioenvs/
