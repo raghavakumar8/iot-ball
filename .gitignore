@@ -4,3 +4,4 @@ lockfile.lck
 
 # Platformio
 .pioenvs/
+.piolibdeps/
