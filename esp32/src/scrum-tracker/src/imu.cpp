@@ -8,6 +8,9 @@
 
 MPU9250_DMP imu;
 
+bool throw_detected = false;
+bool shake_detected = false;
+
 void setupIMU()
 {
   if (imu.begin() != INV_SUCCESS)
@@ -40,8 +43,14 @@ void updateIMU()
     float gyroY = imu.calcGyro(imu.gy);
     float gyroZ = imu.calcGyro(imu.gz);
 
-    Serial.printf("Accel: %f %f %f\n", accelX, accelY, accelZ);
-    Serial.printf("Gyro: %f %f %f\n", gyroX, gyroY, gyroZ);
+    float accel_total = accelX*accelX + accelY*accelY + accelZ*accelZ;
+    
+    // Ultra basic gestures
+    throw_detected = accel_total < 0.3;
+    shake_detected = accel_total > 4.0;
+
+    Serial.printf("Accel: %f \n", accel_total);
+    // Serial.printf("Gyro: %f %f %f\n", gyroX, gyroY, gyroZ);
     Serial.println("-------");
   }
   delay(10);
@@ -49,10 +58,10 @@ void updateIMU()
 
 bool throwDetected()
 {
-  return false;
+  return throw_detected;
 }
 
 bool shakeDetected()
 {
-  return false;
+  return shake_detected;
 }

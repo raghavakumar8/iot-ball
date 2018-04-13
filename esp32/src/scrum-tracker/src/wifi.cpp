@@ -12,7 +12,7 @@ bool connected = false;
 
 void setupWIFI()
 {
-  WiFi.begin("Maidbot", "thinkoutsidethebot");
+  WiFi.begin("ssid", "password");
   Serial.print("Attempting to connect to WiFi");
   while (WiFi.status() != WL_CONNECTED) 
   {

@@ -23,6 +23,16 @@ void setup()
 
 void loop() {
   updateIMU();
+  if (throwDetected())
+  {
+    flash(0, 0, 255, 100);
+  }
+
+  if (shakeDetected())
+  {
+    flash(255, 0, 0, 100);
+  }
+
   webSocket.loop();
 
   if(connected)
