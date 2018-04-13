@@ -83,9 +83,12 @@ void circle(uint8_t r, uint8_t g, uint8_t b, int times, int ms, bool direction)
 
 void flashFatalError()
 {
-  while(true)
+  uint64_t start = millis();
+  while(millis() - start < 5000)
   {
     flash(255, 0, 0, 100);
     delay(200);
   }
+
+  while(true);
 }

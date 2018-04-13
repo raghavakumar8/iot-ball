@@ -6,16 +6,26 @@
 
 #include "scrum-tracker/include/scrum_tracker.h"
 
+#define WIFI_TIMEOUT 10000
+
 WebSocketsClient webSocket;
 
 bool connected = false;
 
 void setupWIFI()
 {
-  WiFi.begin("ssid", "password");
-  Serial.print("Attempting to connect to WiFi");
+  WiFi.begin(WIFI_SSID, WIFI_PWD);
+  Serial.printf("Attempting to connect to %s\n", WIFI_SSID);
+
+  uint64_t start = millis(); 
   while (WiFi.status() != WL_CONNECTED) 
   {
+    if(millis() - start > WIFI_TIMEOUT)
+    {
+      Serial.println("\nFailed to connect to WiFi.");
+      flashFatalError();
+    }
+
     pulsate(0, 0, 255, 1000);
     Serial.print(".");
   }
@@ -25,7 +35,7 @@ void setupWIFI()
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
   
-  webSocket.begin("192.168.1.220", 80, "/echo");
+  webSocket.begin(SERVER, 80, "/echo");
   webSocket.onEvent(webSocketEvent);
 }
 
