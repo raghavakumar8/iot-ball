@@ -6,24 +6,45 @@
 
 #include "scrum-tracker/include/scrum_tracker.h"
 
-MPU9250 imu;
+MPU9250_DMP imu;
 
 void setupIMU()
 {
-  Wire.begin();
-  uint8_t c = imu.readByte(MPU9250_ADDRESS, WHO_AM_I_MPU9250);
-
-  if (c != 0x71)
+  if (imu.begin() != INV_SUCCESS)
   {
     Serial.println("IMU not found. Please check your wires!");
     flashFatalError();
   }
 
+  imu.setSensors(INV_XYZ_GYRO | INV_XYZ_ACCEL);
+  imu.setGyroFSR(2000);
+  imu.setAccelFSR(2);
+  imu.setLPF(5);
+
+  imu.setSampleRate(10);
+
   Serial.println("IMU setup successfully!");
 }
 
-void update()
+void updateIMU()
 {
+  if (imu.dataReady())
+  {
+    imu.update();
+
+    float accelX = imu.calcAccel(imu.ax);
+    float accelY = imu.calcAccel(imu.ay);
+    float accelZ = imu.calcAccel(imu.az);
+
+    float gyroX = imu.calcGyro(imu.gx);
+    float gyroY = imu.calcGyro(imu.gy);
+    float gyroZ = imu.calcGyro(imu.gz);
+
+    Serial.printf("Accel: %f %f %f\n", accelX, accelY, accelZ);
+    Serial.printf("Gyro: %f %f %f\n", gyroX, gyroY, gyroZ);
+    Serial.println("-------");
+  }
+  delay(10);
 }
 
 bool throwDetected()

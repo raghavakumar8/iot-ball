@@ -22,6 +22,7 @@ void setup()
 }
 
 void loop() {
+  updateIMU();
   webSocket.loop();
 
   if(connected)
