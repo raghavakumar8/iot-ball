@@ -13,32 +13,12 @@ void setup()
   Serial.begin(115200);
 
   setupLEDS();
-  flash(0, 0, 255, 100);
-  delay(1000);
-  pulsate(255, 0, 0, 1000);
-  delay(1000);
-  circle(255, 0, 0, 3, 50, true);
-  circle(0, 255, 0, 3, 50, false);
-  delay(1000);
+  setupIMU();
+  setupWIFI();
 
-  WiFi.begin("ssid", "password");
-
-  int ledState = 0;
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-    digitalWrite(5, ledState);
-    ledState = (ledState + 1) % 2; // Flip ledState
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println();
-  Serial.println("WiFi connected!");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-
-  webSocket.begin("192.168.1.220", 80, "/echo");
-  webSocket.onEvent(webSocketEvent);
+  // Indicate successful setup
+  circle(0, 255, 0, 1, 50, true);
+  circle(0, 255, 0, 1, 50, false);
 }
 
 void loop() {

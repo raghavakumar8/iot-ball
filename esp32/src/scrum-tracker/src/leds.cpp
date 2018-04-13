@@ -12,6 +12,8 @@ void setupLEDS()
 {
   leds.begin();
   leds.show();
+  
+  Serial.println("Leds setup successfully!");
 }
 
 void setColor(uint8_t r, uint8_t g, uint8_t b)
@@ -76,5 +78,14 @@ void circle(uint8_t r, uint8_t g, uint8_t b, int times, int ms, bool direction)
         leds.show();
       } 
     }
+  }
+}
+
+void flashFatalError()
+{
+  while(true)
+  {
+    flash(255, 0, 0, 100);
+    delay(200);
   }
 }

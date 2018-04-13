@@ -10,6 +10,25 @@ WebSocketsClient webSocket;
 
 bool connected = false;
 
+void setupWIFI()
+{
+  WiFi.begin("Maidbot", "thinkoutsidethebot");
+  Serial.print("Attempting to connect to WiFi");
+  while (WiFi.status() != WL_CONNECTED) 
+  {
+    pulsate(0, 0, 255, 1000);
+    Serial.print(".");
+  }
+
+  Serial.println();
+  Serial.println("WiFi connected!");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+  
+  webSocket.begin("192.168.1.220", 80, "/echo");
+  webSocket.onEvent(webSocketEvent);
+}
+
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
 {
   switch(type) {
