@@ -3,5 +3,6 @@ OldVersions/
 lockfile.lck
 
 # Platformio
+platformio/
 .pioenvs/
 .piolibdeps/
