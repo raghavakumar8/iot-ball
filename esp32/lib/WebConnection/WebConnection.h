@@ -18,7 +18,7 @@ public:
   {}
   ~WebConnection(){}
 
-  void initialize(int timeout);
+  void initialize(String ssid, String pwd, String server, int port, String ns, int timeout);
   bool send(String text);
   void update();
 

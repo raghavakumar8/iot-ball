@@ -8,9 +8,10 @@
 
 using namespace std::placeholders;
 
-void WebConnection::initialize(int timeout)
+void WebConnection::initialize(String ssid, String pwd, String server, 
+                               int port, String ns, int timeout)
 {
-  WiFi.begin(WIFI_SSID, WIFI_PWD);
+  WiFi.begin(ssid.c_str(), pwd.c_str());
   Serial.printf("Attempting to connect to %s\n", WIFI_SSID);
 
   uint64_t start = millis();
@@ -30,7 +31,7 @@ void WebConnection::initialize(int timeout)
   Serial.println("WiFi connected!");
   Serial.printf("IP address: %s\n", WiFi.localIP());
   
-  client_.begin(SERVER, 80, "/echo");
+  client_.begin(server, port, ns);
   client_.onEvent(std::bind(&WebConnection::webSocketEvent, this,  _1, _2, _3));
 }
 
