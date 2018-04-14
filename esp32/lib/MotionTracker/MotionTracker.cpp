@@ -21,6 +21,7 @@ bool MotionTracker::initialize()
   imu_.setSampleRate(10);
 
   last_motion_time_ = millis();
+  last_update_time_ = millis();
 
   Serial.println("IMU setup successfully!");
   return true;
@@ -67,7 +68,7 @@ Motion MotionTracker::detect()
       }
 
       // Shake?
-      if (buffer_[buffer_pos_ % 5] == VERY_HIGH_ACCEL && count[VERY_HIGH_ACCEL] >= 2
+      if (buffer_[buffer_pos_ % 5] == VERY_HIGH_ACCEL && count[VERY_HIGH_ACCEL] >= 4
           && count[LOW_ACCEL] == 0)
       {
         detected = Motion::SHAKE;
@@ -87,6 +88,13 @@ Motion MotionTracker::detect()
 
 void MotionTracker::updateData()
 {
+  // Clear buffer on long pauses
+  if (millis() - last_update_time_ > 500)
+  {
+    memset(buffer_, 0, 5*sizeof(MotionTracker::Primitive));
+  }
+  last_update_time_ = millis();
+
   // Update raw values
   accel_[0] = imu_.calcAccel(imu_.ax);
   accel_[1] = imu_.calcAccel(imu_.ay);
@@ -101,11 +109,11 @@ void MotionTracker::updateData()
   gyro_[2] = imu_.calcGyro(imu_.gz);
 
   // Update measurement buffer
-  if(total_accel_ < 0.1)
+  if(total_accel_ < 0.2)
   {
     buffer_[buffer_pos_++ % 5] = LOW_ACCEL;
   }
-  else if(total_accel_ > 3.0)
+  else if(total_accel_ > 2.2)
   {
     buffer_[buffer_pos_++ % 5] = VERY_HIGH_ACCEL;
   }

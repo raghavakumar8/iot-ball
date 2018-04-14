@@ -27,6 +27,7 @@ private:
   int buffer_pos_ = 0;
 
   uint64_t last_motion_time_;
+  uint64_t last_update_time_;
 
   float accel_[3] = {0.0, 0.0, 0.0};
   float gyro_[3] = {0.0, 0.0, 0.0};
