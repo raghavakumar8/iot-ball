@@ -12,7 +12,7 @@ void WebConnection::initialize(String ssid, String pwd, String server,
                                int port, String ns, int timeout)
 {
   WiFi.begin(ssid.c_str(), pwd.c_str());
-  Serial.printf("Attempting to connect to %s\n", WIFI_SSID);
+  Serial.printf("Attempting to connect to %s", WIFI_SSID);
 
   uint64_t start = millis();
   while (WiFi.status() != WL_CONNECTED) 
@@ -27,9 +27,9 @@ void WebConnection::initialize(String ssid, String pwd, String server,
     Serial.print(".");
   }
 
-  Serial.println();
-  Serial.println("WiFi connected!");
-  Serial.printf("IP address: %s\n", WiFi.localIP());
+  Serial.println(" done!");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
   
   client_.begin(server, port, ns);
   client_.onEvent(std::bind(&WebConnection::webSocketEvent, this,  _1, _2, _3));
@@ -55,7 +55,7 @@ void WebConnection::webSocketEvent(WStype_t type, uint8_t * payload, size_t leng
 {
   switch(type) {
     case WStype_DISCONNECTED:
-      Serial.println("Web socket disconnected.");
+      Serial.println("Web socket disconnected");
       connected_ = false;
       break;
     case WStype_CONNECTED:
@@ -70,7 +70,7 @@ void WebConnection::webSocketEvent(WStype_t type, uint8_t * payload, size_t leng
       }
       break;
     case WStype_BIN:
-      Serial.println("Received unexpected binary data.");
+      Serial.println("Received unexpected binary data");
       break;
   }
 }
