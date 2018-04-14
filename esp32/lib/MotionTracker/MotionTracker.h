@@ -8,7 +8,7 @@
 
 #include <SparkFunMPU9250-DMP.h>
 
-enum class Motion{NONE, THROW, JERK, SHAKE, TWIST, TAP};
+enum class Motion {NONE, THROW, SHAKE, TWIST};
 
 class MotionTracker
 {
@@ -21,12 +21,17 @@ public:
 
 private:
   void updateData();
-  
+
+  enum Primitive {MEH, LOW_ACCEL, VERY_HIGH_ACCEL, HIGH_GYRO};
+  MotionTracker::Primitive buffer_[5];
+  int buffer_pos_ = 0;
+
+  uint64_t last_motion_time_;
+
   float accel_[3] = {0.0, 0.0, 0.0};
   float gyro_[3] = {0.0, 0.0, 0.0};
   float total_accel_ = 0.0;
 
-  Motion last_detected_ = Motion::NONE;
   MPU9250_DMP imu_;
 };
 
