@@ -9,4 +9,4 @@ RUN pip install -r web/requirements.txt
 COPY web web
 
 ENV INITSYSTEM on
-CMD ["python","web/app.py"]
+CMD ["python","web/app.py","/data/scrum.db"]
