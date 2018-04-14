@@ -72,6 +72,19 @@ void LEDRing::run(CRGB color, int repetitions, int duration, bool direction)
   }
 }
 
+void LEDRing::randomRun(CRGB color, int duration)
+{
+  int led = random(0, count_);
+  for (int j = 0; j <= led; j++)
+  {
+    solid(color, j);
+    delay(duration);
+    solid(CRGB::Black, j);
+  }
+
+  solid(color, led);
+}
+
 void LEDRing::fatalError(int duration)
 {
   uint64_t start = millis();

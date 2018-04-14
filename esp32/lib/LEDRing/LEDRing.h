@@ -36,6 +36,7 @@ public:
   void flash(CRGB color, int duration);
   void pulse(CRGB color, int duration);
   void run(CRGB color, int repetitions, int duration, bool direction);
+  void randomRun(CRGB color, int duration);
   void fatalError(int duration);
 
 private:
