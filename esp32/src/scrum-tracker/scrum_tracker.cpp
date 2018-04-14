@@ -28,7 +28,7 @@ void setup()
   leds.initialize<15>();
   motion_tracker.initialize();
   web_connection.initialize(WIFI_SSID, WIFI_PWD, 
-                     SERVER, 80, "/echo", 10000);
+                     SERVER, 80, "/scrum_data", 10000);
 
   // Indicate successful setup
   leds.run(CRGB::Green, 1, 50, true);

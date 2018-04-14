@@ -26,6 +26,26 @@ def echo_socket(ws):
     print "Client disconnected"
     sys.stdout.flush()
 
+@sockets.route('/scrum_data')
+def echo_socket(ws):
+    print "Client connected to: /scrum_data"
+    sys.stdout.flush()
+    while not ws.closed:
+        message = ws.receive()
+        data_str = message.split(", ")
+
+        try:
+            data = [int(datum) for datum in data_str]
+            if data[0] != len(data) - 2:
+                raise ValueError()
+            ws.send("OK")
+
+        except ValueError:
+            ws.send("BAD")
+
+    print "Client disconnected"
+    sys.stdout.flush()
+
 if __name__ == '__main__':
     from gevent import pywsgi
     from geventwebsocket.handler import WebSocketHandler
