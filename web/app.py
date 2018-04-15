@@ -5,7 +5,7 @@ import sys
 import time
 import sqlite3
 
-from flask import Flask, render_template
+from flask import Flask, request, render_template, jsonify
 from flask_sockets import Sockets
 
 __author__ = "raghava@maidbot.co (Raghava Kumar)"
@@ -14,11 +14,15 @@ app = Flask(__name__, template_folder='templates')
 sockets = Sockets(app)
 database = ''
 
+@app.route('/chart_data', methods=['POST'])
+def get_data():
+  data = {'data': [['a', 1], ['b', 2], ['c', -1.0]]}
+  return jsonify(data)
+
+
 @app.route('/')
 def load_chart():
-  data = [['a', 1], ['b', 2], ['c', 1.5]]
-  data = {'row_data': data}
-  return render_template('chart.html', data=data)
+  return render_template('index.html')
 
 
 @sockets.route('/echo')
