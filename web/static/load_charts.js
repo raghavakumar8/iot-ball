@@ -11,36 +11,30 @@ function showWeekReview() {
   data.addColumn({ type: 'date', id: 'End' });
 
   var json = getDataFor('week');
-
-  data.addRows([
-    [ 'Monday', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
-    [ 'Monday', new Date(1797, 2, 4), new Date(1801, 2, 4) ],
-    [ 'Monday', new Date(1801, 2, 4), new Date(1809, 2, 4) ],
-    [ 'Tuesday', new Date(1789, 3, 21), new Date(1797, 2, 4)],
-    [ 'Tuesday', new Date(1797, 2, 4), new Date(1801, 2, 4)],
-    [ 'Tuesday', new Date(1801, 2, 4), new Date(1805, 2, 4)],
-    [ 'Tuesday', new Date(1805, 2, 4), new Date(1812, 3, 20)],
-    [ 'Wednesday', new Date(1789, 8, 25), new Date(1790, 2, 22)],
-    [ 'Wednesday', new Date(1790, 2, 22), new Date(1793, 11, 31)],
-    [ 'Wednesday', new Date(1794, 0, 2), new Date(1795, 7, 20)],
-    [ 'Thursday', new Date(1794, 0, 2), new Date(1794, 0, 2)],
-    [ 'Friday', new Date(1795, 7, 20), new Date(1800, 4, 12)],
-    [ 'Friday', new Date(1800, 4, 13), new Date(1800, 5, 5)],
-    [ 'Saturday', new Date(1800, 5, 13), new Date(1801, 2, 4)],
-    [ 'Sunday', new Date(1801, 2, 5), new Date(1801, 4, 1)],
-    [ 'Sunday', new Date(1801, 4, 2), new Date(1809, 2, 3)]
-  ]);
+  for (var i = 0; i < json.meetings.length; i++)
+  {
+    var m = json.meetings[i];
+    data.addRow([m[0], new Date(0, 0, 0, m[1].h, m[1].m, m[1].s),
+                       new Date(0, 0, 0, m[2].h, m[2].m, m[2].s)]);
+  }
 
   var chart = new google.visualization.Timeline(document.getElementById('week_review'));
   chart.draw(data, {height: 340});
+
+  google.visualization.events.addListener(chart, 'select', function() {
+    var json = getDataFor('week');
+
+    var selection_timestamp = json.meetings[chart.getSelection()[0].row][1].t;
+    showMeetingDetailFor(new Date(selection_timestamp*1000.0));
+  });
 }
 
-function showMeetingDetail() {
+function showMeetingDetailFor(date) {
   var data = new google.visualization.DataTable();
   data.addColumn('string', 'Section');
   data.addColumn('number', 'Time');
 
-  var json = getDataFor('meeting');
+  var json = getDataFor('meeting', date);
   data.addRows(json.sections);
 
   document.getElementById('meeting_details').innerHTML = json.meeting_info;
@@ -48,6 +42,10 @@ function showMeetingDetail() {
   var card_width = $('#meeting_detail_card').width();
   var chart = new google.visualization.PieChart(document.getElementById('meeting_breakdown'));
   chart.draw(data, {pieHole: 0.4, height: card_width, legend: 'none'});
+}
+
+function showMeetingDetail() {
+  showMeetingDetailFor(new Date());
 }
 
 function showTrends() {

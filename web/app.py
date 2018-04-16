@@ -25,25 +25,42 @@ def get_data():
 
   if request.args['type'] == 'week':
     (start, end) = get_week_timestamps(request_time)
-    print 'Getting data for week: ' + `start` + ' - ' + `end`
+    print 'Fetching data for week: ' + `start` + ' - ' + `end`
+
+    # Query database
     c.execute('SELECT * FROM scrum WHERE timestamp >= ? AND timestamp <= ?', (start, end))
     rows = c.fetchall()
 
-    print rows
-    data = [['Monday', 0, 0], ['Tuesday', 0, 0], ['Wednesday', 0, 0], 
-            ['Thursday', 0, 0], ['Friday', 0, 0], ['Saturday', 0, 0],
-            ['Sunday', 0, 0]]    
+    # Add default data so all days show up
+    zero = {'h': 0, 'm': 0, 's': 0, 't': 0}
+    meetings = [['Monday', zero, zero], ['Tuesday', zero, zero], ['Wednesday', zero, zero], 
+                ['Thursday', zero, zero], ['Friday', zero, zero], ['Saturday', zero, zero],
+                ['Sunday', zero, zero]]
+
+    # Convert database rows to processable data
+    for row in rows:
+      start = datetime.fromtimestamp(int(row[0]))
+      end = start + timedelta(seconds=row[1])
+      meetings.append([start.strftime('%A'), 
+                      {'h': start.hour, 'm': start.minute, 's': start.second, 't': int(row[0])}, 
+                      {'h': end.hour, 'm': end.minute, 's': end.second, 't': int(row[0])}])
+
+    data = {'meetings': meetings}
 
   elif request.args['type'] == 'meeting':
-    print 'Getting data for meeting at: ' + `request_time`
+    print 'Fetching data for meeting at: ' + `request_time`
+
+    # Query database
     c.execute('SELECT * FROM scrum WHERE timestamp = ?', (request_time, ))
     rows = c.fetchall()
 
     if rows == []:
+      # Fallback query
       print 'No meeting found for that timestamp. Returning latest meeting instead.'
       c.execute('SELECT * FROM scrum WHERE timestamp = (select max(timestamp) from scrum)')
       rows = c.fetchall()
 
+    # Convert row to processable data
     timestamp = int(rows[0][0])
     sections = rows[0][3].split(' ')
 
@@ -68,7 +85,7 @@ def get_data():
 
 
 def get_week_timestamps(timestamp):
-  """ Get timestamps that demaracte the start and end of this week """
+  """ Get timestamps that demarcate the start and end of this week """
   dt = datetime.fromtimestamp(timestamp)
   time_since_week_start = timedelta(days=dt.weekday(),
                                     hours=dt.hour,
@@ -78,11 +95,17 @@ def get_week_timestamps(timestamp):
   week_start = dt - time_since_week_start
   week_end = week_start + timedelta(days=7)
 
-  epoch = datetime.fromtimestamp(0)
+  utc_difference = datetime.utcfromtimestamp(timestamp) - dt
+  utc_week_start = week_start + utc_difference
+  utc_week_end = week_end + utc_difference
 
-  start = int((week_start - epoch).total_seconds())
-  end = int((week_end - epoch).total_seconds())
-  return (start, end)
+  return (datetime_to_epoch(utc_week_start), datetime_to_epoch(utc_week_end))
+
+
+def datetime_to_epoch(date):
+  """ Helper to convert a UTC datetime object into seconds since epoch. """
+  epoch = datetime.utcfromtimestamp(0)
+  return int((date - epoch).total_seconds())
 
 @app.route('/')
 def load_chart():
