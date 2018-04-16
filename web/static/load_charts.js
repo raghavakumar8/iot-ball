@@ -9,6 +9,9 @@ function showWeekReview() {
   data.addColumn({ type: 'string', id: 'Day' });
   data.addColumn({ type: 'date', id: 'Start' });
   data.addColumn({ type: 'date', id: 'End' });
+
+  var json = getDataFor('week');
+
   data.addRows([
     [ 'Monday', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
     [ 'Monday', new Date(1797, 2, 4), new Date(1801, 2, 4) ],
@@ -37,18 +40,20 @@ function showMeetingDetail() {
   data.addColumn('string', 'Section');
   data.addColumn('number', 'Time');
 
-  var json = getDataFor('trend');
-  data.addRows(json.data);
+  var json = getDataFor('meeting');
+  data.addRows(json.sections);
+
+  document.getElementById('meeting_details').innerHTML = json.meeting_info;
 
   var card_width = $('#meeting_detail_card').width();
-  var chart = new google.visualization.PieChart(document.getElementById('meeting_detail'));
+  var chart = new google.visualization.PieChart(document.getElementById('meeting_breakdown'));
   chart.draw(data, {pieHole: 0.4, height: card_width, legend: 'none'});
 }
 
 function showTrends() {
   var data = new google.visualization.DataTable();
   data.addColumn('string', 'Date');
-  data.addColumn('number', 'Depth');
+  data.addColumn('number', 'Total Scrum Time');
 
   var json = getDataFor('trend');
   data.addRows(json.data);
@@ -57,11 +62,14 @@ function showTrends() {
   chart.draw(data);
 }
 
-function getDataFor(chart_type) {
+function getDataFor(chart_type, date) {
+  date = date || new Date();
+
+  var timestamp = Math.floor(date.getTime()/1000);
+
   return $.ajax({
     url: "/chart_data",
-    data: {form: {type: chart_type}},
-    type: 'POST',
+    data: {type: chart_type, time: timestamp},
     async: false
   }).responseJSON;
 }

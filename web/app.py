@@ -5,6 +5,7 @@ import sys
 import time
 import sqlite3
 
+from datetime import datetime, timedelta
 from flask import Flask, request, render_template, jsonify
 from flask_sockets import Sockets
 
@@ -14,11 +15,74 @@ app = Flask(__name__, template_folder='templates')
 sockets = Sockets(app)
 database = ''
 
-@app.route('/chart_data', methods=['POST'])
+@app.route('/chart_data')
 def get_data():
-  data = {'data': [['a', 1], ['b', 2], ['c', 3.5]]}
+  """ Serve data to web front end """
+  request_time = int(request.args['time'])
+
+  conn = sqlite3.connect(database)
+  c = conn.cursor()
+
+  if request.args['type'] == 'week':
+    (start, end) = get_week_timestamps(request_time)
+    print 'Getting data for week: ' + `start` + ' - ' + `end`
+    c.execute('SELECT * FROM scrum WHERE timestamp >= ? AND timestamp <= ?', (start, end))
+    rows = c.fetchall()
+
+    print rows
+    data = [['Monday', 0, 0], ['Tuesday', 0, 0], ['Wednesday', 0, 0], 
+            ['Thursday', 0, 0], ['Friday', 0, 0], ['Saturday', 0, 0],
+            ['Sunday', 0, 0]]    
+
+  elif request.args['type'] == 'meeting':
+    print 'Getting data for meeting at: ' + `request_time`
+    c.execute('SELECT * FROM scrum WHERE timestamp = ?', (request_time, ))
+    rows = c.fetchall()
+
+    if rows == []:
+      print 'No meeting found for that timestamp. Returning latest meeting instead.'
+      c.execute('SELECT * FROM scrum WHERE timestamp = (select max(timestamp) from scrum)')
+      rows = c.fetchall()
+
+    timestamp = int(rows[0][0])
+    sections = rows[0][3].split(' ')
+
+    section_data = []  
+    for i in xrange(len(sections)-1):
+      section_name = 'Section ' + `i+1`
+      section_data.append([section_name, float(sections[i])])
+
+    data = {'sections': section_data}
+    data['meeting_info'] = datetime.fromtimestamp(timestamp).strftime('%A, %d %B at %X %p')
+
+  elif request.args['type'] == 'trend':
+    print 'Getting trends'
+
+    # TODO: Actually implement this
+    data = {'data': [['a', 1], ['b', 2], ['c', 3.5]]}
+
+  sys.stdout.flush()
+  conn.close()
+
   return jsonify(data)
 
+
+def get_week_timestamps(timestamp):
+  """ Get timestamps that demaracte the start and end of this week """
+  dt = datetime.fromtimestamp(timestamp)
+  time_since_week_start = timedelta(days=dt.weekday(),
+                                    hours=dt.hour,
+                                    minutes=dt.minute,
+                                    seconds=dt.second)
+
+  week_start = dt - time_since_week_start
+  week_end = week_start + timedelta(days=7)
+
+  epoch = datetime.fromtimestamp(0)
+
+  start = int((week_start - epoch).total_seconds())
+  end = int((week_end - epoch).total_seconds())
+  return (start, end)
 
 @app.route('/')
 def load_chart():
