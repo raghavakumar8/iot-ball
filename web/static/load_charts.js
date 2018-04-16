@@ -51,13 +51,15 @@ function showMeetingDetail() {
 function showTrends() {
   var data = new google.visualization.DataTable();
   data.addColumn('string', 'Date');
-  data.addColumn('number', 'Total Scrum Time');
+  data.addColumn('number', 'Total meeting time');
+  data.addColumn('number', 'Number of speakers');
+  data.addColumn('number', 'Average speaker time');
 
   var json = getDataFor('trend');
-  data.addRows(json.data);
+  data.addRows(json.trends);
 
   var chart = new google.visualization.LineChart(document.getElementById('trends'));
-  chart.draw(data);
+  chart.draw(data, {legend: {position: 'bottom'}});
 }
 
 function getDataFor(chart_type, date) {

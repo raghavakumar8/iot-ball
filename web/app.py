@@ -75,8 +75,23 @@ def get_data():
   elif request.args['type'] == 'trend':
     print 'Getting trends'
 
-    # TODO: Actually implement this
-    data = {'data': [['a', 1], ['b', 2], ['c', 3.5]]}
+    # Query database
+    c.execute('SELECT * FROM scrum')
+    rows = c.fetchall()
+    
+    # Convert database rows to processable data
+    trends = []
+    for row in rows:
+      start = datetime.fromtimestamp(int(row[0]))
+      date = start.strftime('%d %B %X %p')
+      total_time = float(row[1])
+
+      num_sections = len(row[3].split(' ')) - 1
+      avg_time = total_time/num_sections
+
+      trends.append([date, total_time, num_sections, avg_time])
+
+    data = {'trends': trends}
 
   sys.stdout.flush()
   conn.close()
