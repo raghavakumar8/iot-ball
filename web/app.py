@@ -16,7 +16,7 @@ database = ''
 
 @app.route('/chart_data', methods=['POST'])
 def get_data():
-  data = {'data': [['a', 1], ['b', 2], ['c', -1.0]]}
+  data = {'data': [['a', 1], ['b', 2], ['c', 3.5]]}
   return jsonify(data)
 
 

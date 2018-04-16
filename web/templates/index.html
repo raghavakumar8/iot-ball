@@ -1,16 +1,66 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <html>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script type="text/javascript" src="static/load_charts.js"></script>
   <title>Scrum Tracker</title>
 </head>
-<body>
 
-  <div id="trend"></div>
+<body style="background-color: #494949;">
+
+  <nav class="navbar navbar-expand-lg fixed-top" style="background-color: #30aadd;">
+    <span class="navbar-brand mb-0 h1">Maidbot's Scrum Tracker</span>
+  </nav>
+
+  <div class="container" style="padding-top: 60px;">
+    <div class="row">
+      <div class="col-md-4 mt-4" id="meeting_detail_col">
+        <div class="card h-100">
+          <div class="card-body" id="meeting_detail_card">
+            <h5 class="card-title">Meeting Detail</h5>
+            <h6 class="card-subtitle text-muted">Monday, 3rd January 2018 at 3:00pm</h6>
+            <div id="meeting_detail"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8 mt-4" id="week_review_col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Week Review</h5>
+            <div id="week_review"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12 my-4" id="trends_col">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Trends</h5>
+            <div id="trends"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="py-3 bg-dark" style="background-color: #151515;">
+    <div class="container">
+      <p class="m-0 text-center text-white">
+        Made for Maidbot with <i class="fa fa-heart"></i> from Raghava
+      </p>
+    </div>
+  </footer>
 
 </body>
 </html>
